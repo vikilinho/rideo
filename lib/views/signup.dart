@@ -4,6 +4,7 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:rideo/main.dart';
 import 'package:rideo/views/login_screen.dart';
 
 class SignUp extends StatefulWidget {
@@ -85,13 +86,18 @@ class _SignUpState extends State<SignUp> {
           Container(
             child: ElevatedButton(
               onPressed: () {
-                if (_nameController.text.length < 6 ||
-                    _emailController.text.length < 6 ||
-                    _phoneNumberController.text.length < 6 ||
-                    _passwordController.text.length < 6) {
+                if (_nameController.text.length < 6) {
                   showToastmsg("Invalid Input", context);
+                } else if (!_emailController.text.contains("@")) {
+                  showToastmsg("Invalid emaill", context);
+                } else if (_phoneNumberController.text.length < 8 ||
+                    _phoneNumberController.text.isEmpty) {
+                  showToastmsg("Invalid Input", context);
+                } else if (_passwordController.text.length < 6) {
+                  showToastmsg("Enter atleast 8 characters", context);
+                } else {
+                  registerUser(context);
                 }
-                registerUser(context);
               },
               child: Text("Register"),
               style: ElevatedButton.styleFrom(
@@ -128,13 +134,23 @@ class _SignUpState extends State<SignUp> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   registerUser(BuildContext context) async {
-    final firebaseuser = (await _auth.createUserWithEmailAndPassword(
-            email: _emailController.text, password: _passwordController.text))
+    final firebaseuser = (await _auth
+            .createUserWithEmailAndPassword(
+                email: _emailController.text,
+                password: _passwordController.text)
+            .catchError((errMsg) {
+      showToastmsg('error message' + errMsg.toString(), context);
+    }))
         .user;
     if (firebaseuser != null) {
-      //save user to database with firebaseuser.uid as key
+      Map userData = {
+        "name": _nameController.text,
+        "email": _emailController.text,
+        "phone": _phoneNumberController.text,
+      };
+      userRef.child(firebaseuser.uid).set(userData);
     } else {
-      //show error;
+      showToastmsg("User creation failed", context);
     }
   }
 

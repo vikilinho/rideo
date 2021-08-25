@@ -4,7 +4,7 @@ import 'package:rideo/views/signup.dart';
 
 const String LOGIN_SCREEN = 'LOGIN_SCREEN';
 const String SIGNUP_SCREEN = 'SIGNUP_SCREEN';
-Route<dynamic?> nameRoutes(RouteSettings settings) {
+Route<dynamic> nameRoutes(RouteSettings settings) {
   switch (settings.name) {
     case LOGIN_SCREEN:
       return MaterialPageRoute(builder: (context) => Login());

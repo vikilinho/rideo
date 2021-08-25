@@ -1,11 +1,17 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:rideo/views/home_screen.dart';
 import 'package:rideo/views/login_screen.dart';
 import 'package:rideo/views/signup.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MyApp());
 }
+
+DatabaseReference userRef = FirebaseDatabase.instance.reference().child("user");
 
 class MyApp extends StatelessWidget {
   @override
@@ -20,7 +26,7 @@ class MyApp extends StatelessWidget {
         SignUp.regID: (context) => SignUp(),
         HomeScreen.homeID: (context) => HomeScreen(),
       },
-      initialRoute: Login.logID,
+      initialRoute: SignUp.regID,
     );
   }
 }
