@@ -1,7 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:rideo/main.dart';
+import 'package:rideo/views/home_screen.dart';
 import 'package:rideo/views/signup.dart';
 
 class Login extends StatefulWidget {
@@ -11,6 +15,9 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,6 +46,7 @@ class _LoginState extends State<Login> {
           Padding(
             padding: const EdgeInsets.all(12.0),
             child: TextField(
+              controller: emailController,
               keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(hintText: "Email"),
             ),
@@ -49,6 +57,7 @@ class _LoginState extends State<Login> {
           Padding(
             padding: const EdgeInsets.all(12.0),
             child: TextField(
+              controller: passwordController,
               keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(hintText: "Password"),
             ),
@@ -92,5 +101,30 @@ class _LoginState extends State<Login> {
         ],
       ),
     );
+  }
+
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  loginUser(BuildContext context) async {
+    final User? firebaseUser = (await _auth
+            .signInWithEmailAndPassword(
+                email: emailController.text, password: passwordController.text)
+            .catchError((errMsg) {
+      showToastmsg('error message' + errMsg.toString(), context);
+      print('error message' + errMsg.toString());
+    }))
+        .user!;
+
+    if (firebaseUser != null) {
+      userRef.child(firebaseUser.uid).once().then((value) => {});
+      showToastmsg("Registered Successfully", context);
+      Navigator.pushNamedAndRemoveUntil(
+          context, HomeScreen.homeID, (route) => false);
+    } else {
+      showToastmsg("User creation failed", context);
+    }
+  }
+
+  showToastmsg(String message, BuildContext context) {
+    Fluttertoast.showToast(msg: message);
   }
 }

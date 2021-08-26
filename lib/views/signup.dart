@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:rideo/main.dart';
+import 'package:rideo/views/home_screen.dart';
 import 'package:rideo/views/login_screen.dart';
 
 class SignUp extends StatefulWidget {
@@ -47,17 +48,18 @@ class _SignUpState extends State<SignUp> {
           Padding(
             padding: const EdgeInsets.all(12.0),
             child: TextField(
-              controller: _nameController,
-              keyboardType: TextInputType.emailAddress,
-              decoration: InputDecoration(hintText: "Full Name"),
-            ),
+                controller: _nameController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: InputDecoration(
+                    hintText: "Full Name", labelText: "Full Name")),
           ),
           Padding(
             padding: const EdgeInsets.all(12.0),
             child: TextField(
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
-              decoration: InputDecoration(hintText: "Email"),
+              decoration:
+                  InputDecoration(hintText: "Email", labelText: "Email"),
             ),
           ),
           SizedBox(
@@ -68,7 +70,8 @@ class _SignUpState extends State<SignUp> {
             child: TextField(
               controller: _phoneNumberController,
               keyboardType: TextInputType.number,
-              decoration: InputDecoration(hintText: "Phone Number"),
+              decoration: InputDecoration(
+                  hintText: "Phone Number", labelText: "Phone Number"),
             ),
           ),
           SizedBox(
@@ -77,11 +80,13 @@ class _SignUpState extends State<SignUp> {
           Padding(
             padding: const EdgeInsets.all(12.0),
             child: TextField(
-              controller: _passwordController,
-              obscureText: true,
-              keyboardType: TextInputType.text,
-              decoration: InputDecoration(hintText: "Password"),
-            ),
+                controller: _passwordController,
+                obscureText: true,
+                keyboardType: TextInputType.text,
+                decoration: InputDecoration(
+                  hintText: "Password",
+                  labelText: "Password",
+                )),
           ),
           Container(
             child: ElevatedButton(
@@ -92,7 +97,7 @@ class _SignUpState extends State<SignUp> {
                   showToastmsg("Invalid emaill", context);
                 } else if (_phoneNumberController.text.length < 8 ||
                     _phoneNumberController.text.isEmpty) {
-                  showToastmsg("Invalid Input", context);
+                  showToastmsg("Enter a valid number", context);
                 } else if (_passwordController.text.length < 6) {
                   showToastmsg("Enter atleast 8 characters", context);
                 } else {
@@ -134,21 +139,26 @@ class _SignUpState extends State<SignUp> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   registerUser(BuildContext context) async {
-    final firebaseuser = (await _auth
+    final User? firebaseUser = (await _auth
             .createUserWithEmailAndPassword(
                 email: _emailController.text,
                 password: _passwordController.text)
             .catchError((errMsg) {
       showToastmsg('error message' + errMsg.toString(), context);
+      print('error message' + errMsg.toString());
     }))
-        .user;
-    if (firebaseuser != null) {
+        .user!;
+
+    if (firebaseUser != null) {
       Map userData = {
-        "name": _nameController.text,
-        "email": _emailController.text,
-        "phone": _phoneNumberController.text,
+        "name": _nameController.text.trim(),
+        "email": _emailController.text.trim(),
+        "phone": _phoneNumberController.text.trim(),
       };
-      userRef.child(firebaseuser.uid).set(userData);
+      userRef.child(firebaseUser.uid).set(userData);
+      showToastmsg("Registered Successfully", context);
+      Navigator.pushNamedAndRemoveUntil(
+          context, HomeScreen.homeID, (route) => false);
     } else {
       showToastmsg("User creation failed", context);
     }
