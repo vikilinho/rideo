@@ -4,6 +4,7 @@ import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:rideo/components/progressbar.dart';
 import 'package:rideo/main.dart';
 import 'package:rideo/views/home_screen.dart';
 import 'package:rideo/views/login_screen.dart';
@@ -139,13 +140,19 @@ class _SignUpState extends State<SignUp> {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   registerUser(BuildContext context) async {
+    showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context) {
+          return ProgressBar(message: "registering in...");
+        });
     final User? firebaseUser = (await _auth
             .createUserWithEmailAndPassword(
                 email: _emailController.text,
                 password: _passwordController.text)
             .catchError((errMsg) {
       showToastmsg('error message' + errMsg.toString(), context);
-      print('error message' + errMsg.toString());
+      Navigator.pop(context);
     }))
         .user!;
 
@@ -160,6 +167,7 @@ class _SignUpState extends State<SignUp> {
       Navigator.pushNamedAndRemoveUntil(
           context, HomeScreen.homeID, (route) => false);
     } else {
+      Navigator.pop(context);
       showToastmsg("User creation failed", context);
     }
   }

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1011793657281",
+    "firebase_url": "https://rideo-30378-default-rtdb.firebaseio.com",
+    "project_id": "rideo-30378",
+    "storage_bucket": "rideo-30378.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1011793657281:android:32d8674bf54dd195460340",
+        "android_client_info": {
+          "package_name": "com.example.rider"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1011793657281-a5cgm5adj5lpujbjhs3r77rhgd3fqo4h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAm36v7a5KiE1u1ZwjvHvNWZGylzg2vXsM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1011793657281-a5cgm5adj5lpujbjhs3r77rhgd3fqo4h.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1011793657281-flg4mprimo6k4680mugn8cdjvona3dp2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.rider"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

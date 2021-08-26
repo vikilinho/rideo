@@ -1,9 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:rideo/components/progressbar.dart';
 import 'package:rideo/main.dart';
 import 'package:rideo/views/home_screen.dart';
 import 'package:rideo/views/signup.dart';
@@ -57,6 +59,7 @@ class _LoginState extends State<Login> {
           Padding(
             padding: const EdgeInsets.all(12.0),
             child: TextField(
+              obscureText: true,
               controller: passwordController,
               keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(hintText: "Password"),
@@ -64,7 +67,15 @@ class _LoginState extends State<Login> {
           ),
           Container(
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                if (emailController.text.length < 8) {
+                  showToastmsg("Enter a valied email address", context);
+                } else if (passwordController.text.isEmpty) {
+                  showToastmsg("Enter a valid password", context);
+                } else {
+                  loginUser(context);
+                }
+              },
               child: Text("Login"),
               style: ElevatedButton.styleFrom(
                   side: BorderSide(style: BorderStyle.solid)),
@@ -105,22 +116,41 @@ class _LoginState extends State<Login> {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   loginUser(BuildContext context) async {
+    showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context) {
+          return ProgressBar(message: "Logging in...");
+        });
     final User? firebaseUser = (await _auth
             .signInWithEmailAndPassword(
                 email: emailController.text, password: passwordController.text)
             .catchError((errMsg) {
+      Navigator.pop(context);
       showToastmsg('error message' + errMsg.toString(), context);
-      print('error message' + errMsg.toString());
     }))
         .user!;
 
     if (firebaseUser != null) {
-      userRef.child(firebaseUser.uid).once().then((value) => {});
-      showToastmsg("Registered Successfully", context);
+      userRef
+          .child(firebaseUser.uid)
+          .once()
+          .then((value) => (DataSnapshot snapshot) {
+                if (snapshot.value != null) {
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, HomeScreen.homeID, (route) => false);
+                  showToastmsg("Login Successfully", context);
+                } else {
+                  _auth.signOut();
+                  showToastmsg("User does not exists", context);
+                }
+              });
+
       Navigator.pushNamedAndRemoveUntil(
           context, HomeScreen.homeID, (route) => false);
     } else {
-      showToastmsg("User creation failed", context);
+      Navigator.pop(context);
+      showToastmsg("User login error", context);
     }
   }
 
