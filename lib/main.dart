@@ -11,7 +11,9 @@ Future<void> main() async {
   runApp(MyApp());
 }
 
-DatabaseReference userRef = FirebaseDatabase.instance.reference().child("user"); //called here so you can use in other part of your app
+DatabaseReference userRef = FirebaseDatabase.instance
+    .reference()
+    .child("user"); //called here so you can use in other part of your app
 
 class MyApp extends StatelessWidget {
   @override
@@ -26,7 +28,7 @@ class MyApp extends StatelessWidget {
         SignUp.regID: (context) => SignUp(),
         HomeScreen.homeID: (context) => HomeScreen(),
       },
-      initialRoute: SignUp.regID,
+      initialRoute: HomeScreen.homeID,
     );
   }
 }
