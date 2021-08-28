@@ -14,6 +14,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Completer<GoogleMapController> _mapcontroller = Completer();
   late GoogleMapController _googleMapController;
 
+  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
+
   static final CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(37.42796133580664, -122.085749655962),
     zoom: 14.4746,
@@ -27,6 +29,66 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
+      drawer: Container(
+        color: Colors.white,
+        width: 255,
+        child: Drawer(
+            semanticLabel: "Menu",
+            child: ListView(
+              children: [
+                Container(
+                  height: 200,
+                  child: DrawerHeader(
+                      child: Row(children: [
+                        Image.asset(
+                          'images/user_icon.png',
+                          height: 65,
+                          width: 65,
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              "Profile Name",
+                              style: GoogleFonts.sahitya(),
+                            ),
+                            Text(
+                              "Visit Profile",
+                              style: GoogleFonts.sahitya(fontSize: 12),
+                            )
+                          ],
+                        )
+                      ]),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                      )),
+                ),
+                Divider(
+                  height: 2.5,
+                ),
+                SizedBox(
+                  height: 12,
+                ),
+                ListTile(
+                  leading: Icon(Icons.history),
+                  title: Text("Ride History"),
+                ),
+                ListTile(
+                  leading: Icon(Icons.person_off_outlined),
+                  title: Text("Ride Profile"),
+                ),
+                ListTile(
+                  leading: Icon(Icons.info),
+                  title: Text("About"),
+                ),
+              ],
+            )),
+      ),
       body: Stack(
         children: [
           GoogleMap(
@@ -38,6 +100,34 @@ class _HomeScreenState extends State<HomeScreen> {
               _googleMapController = controller;
             },
           ),
+          Positioned(
+              top: 45,
+              left: 25,
+              child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.black,
+                          blurRadius: 6.0,
+                          spreadRadius: 0.5,
+                          offset: Offset(0.0, 0.0))
+                    ]),
+                child: GestureDetector(
+                  onTap: () {
+                    _scaffoldKey.currentState!.openDrawer();
+                  },
+                  child: CircleAvatar(
+                    radius: 20.0,
+                    backgroundColor: Colors.white,
+                    child: Icon(
+                      Icons.menu,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+              )),
           Positioned(
             right: 0.0,
             bottom: 0.0,
