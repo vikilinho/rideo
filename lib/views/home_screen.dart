@@ -1,8 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+var currentPost;
 
 class HomeScreen extends StatefulWidget {
   static const String homeID = 'HOME_SCREEN';
@@ -11,6 +14,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  late Position currentPosition;
+  var mapPadding = 0.0;
+
   Completer<GoogleMapController> _mapcontroller = Completer();
   late GoogleMapController _googleMapController;
 
@@ -20,11 +26,16 @@ class _HomeScreenState extends State<HomeScreen> {
     target: LatLng(37.42796133580664, -122.085749655962),
     zoom: 14.4746,
   );
-  static final CameraPosition _kLake = CameraPosition(
-      bearing: 192.8334901395799,
-      target: LatLng(37.422, -122.084),
-      tilt: 59.440717697143555,
-      zoom: 19.151926040649414);
+
+  void getCurrentLocation() async {
+    var location = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
+    currentPosition = location;
+    LatLng latLng = LatLng(currentPosition.latitude, currentPosition.longitude);
+    CameraPosition cameraPosition = CameraPosition(target: latLng, zoom: 15);
+    _googleMapController
+        .animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -92,12 +103,20 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Stack(
         children: [
           GoogleMap(
-            mapType: MapType.hybrid,
+            padding: EdgeInsets.only(bottom: mapPadding),
+            myLocationEnabled: true,
+            zoomControlsEnabled: true,
+            zoomGesturesEnabled: true,
+            mapType: MapType.normal,
             myLocationButtonEnabled: true,
             initialCameraPosition: _kGooglePlex,
             onMapCreated: (GoogleMapController controller) {
               _mapcontroller.complete(controller);
               _googleMapController = controller;
+              setState(() {
+                mapPadding = 300.0;
+              });
+              getCurrentLocation();
             },
           ),
           Positioned(
@@ -133,7 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
             bottom: 0.0,
             left: 0.0,
             child: Container(
-              height: MediaQuery.of(context).size.height * 0.35,
+              height: MediaQuery.of(context).size.height * 0.34,
               decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
@@ -168,7 +187,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     SizedBox(
-                      height: 5.0,
+                      height: 4.0,
                     ),
                     Container(
                       height: MediaQuery.of(context).size.height * 0.05,
@@ -199,7 +218,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                     SizedBox(
-                      height: 24.0,
+                      height: 20.0,
                     ),
                     Row(
                       children: [
@@ -229,7 +248,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       color: Colors.black,
                     ),
                     SizedBox(
-                      height: 10,
+                      height: 5,
                     ),
                     Row(
                       children: [
@@ -241,7 +260,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text("Add Work Address"),
-                            SizedBox(height: 4.0),
+                            SizedBox(height: 3.0),
                             Text(
                               "Your work address",
                               style: GoogleFonts.sahitya(
